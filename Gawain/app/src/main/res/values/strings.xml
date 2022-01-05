@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Gawain</string>
+
+    <string-array name="subjects">
+        <item>CS 323</item>
+        <item>CS 321</item>
+        <item>NSTP</item>
+        <item>CS ELEC 2</item>
+    </string-array>
 </resources>

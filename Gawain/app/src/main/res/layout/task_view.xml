@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginTop="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_marginBottom="5dp"
+            android:id="@+id/taskTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Task Title"
+            android:textColor="@color/text_black"
+            android:textSize="17sp"
+            app:layout_constraintStart_toStartOf="@id/txtSubject"
+            app:layout_constraintBottom_toTopOf="@id/txtSubject"/>
+
+        <TextView
+            android:id="@+id/txtSubject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Subject: "
+            android:textColor="@color/text_black"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/finishTask"
+            app:layout_constraintTop_toTopOf="@id/finishTask"
+            app:layout_constraintBottom_toBottomOf="@id/finishTask"
+            android:layout_marginStart="10dp"/>
+
+        <TextView
+            android:id="@+id/taskSubject"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_regular"
+            android:text="CS 323"
+            android:textColor="@color/text_black"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/txtSubject"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtSubject"
+            app:layout_constraintTop_toTopOf="@id/txtSubject" />
+
+        <ImageView
+            android:layout_marginTop="5dp"
+            android:id="@+id/txtDue"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_baseline_date_range_24"
+            app:layout_constraintTop_toBottomOf="@id/txtSubject"
+            app:layout_constraintStart_toStartOf="@id/txtSubject"
+            app:tint="@color/blue_500" />
+
+        <TextView
+            android:id="@+id/taskDue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Jan 05, 2022 12:43 PM"
+            android:textColor="@color/text_black"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@id/txtDue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtDue"
+            app:layout_constraintTop_toTopOf="@id/txtDue" />
+
+        <CheckBox
+            android:id="@+id/finishTask"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/listChoiceIndicatorMultiple"
+            android:button="@null"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="10dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

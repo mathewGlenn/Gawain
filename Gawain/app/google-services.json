@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "189513126999",
+    "project_id": "gawain-9dc52",
+    "storage_bucket": "gawain-9dc52.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189513126999:android:9c3b57725bbd5836367f12",
+        "android_client_info": {
+          "package_name": "com.glennappdev.gawain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "189513126999-vr1foas9sg2guufkogrkobjt75666fjf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.glennappdev.gawain",
+            "certificate_hash": "1e70ba3e67dd7aa768e4faeaa47860ae8824933c"
+          }
+        },
+        {
+          "client_id": "189513126999-0ugtfl1uoaev843tqv134dli9rnak68l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGF3ogQyMQRIPZdvRxoOyKWZOFW3cf5fA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "189513126999-0ugtfl1uoaev843tqv134dli9rnak68l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

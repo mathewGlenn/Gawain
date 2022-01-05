@@ -6,13 +6,92 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <View
+        android:id="@+id/cardBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_bar"
+        android:background="@color/white"
+        android:elevation="10dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
+        android:id="@+id/topBarText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginStart="15dp"
+        android:elevation="10dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Gawain"
+        android:textColor="@color/text_black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/cardBar"
+        app:layout_constraintStart_toStartOf="@id/cardBar"
+        app:layout_constraintTop_toTopOf="@id/cardBar" />
+
+
+
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:paddingBottom="100dp"
+                android:id="@+id/refreshLayout"
+                app:layout_constraintTop_toBottomOf="@id/cardBar">
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/taskList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                     />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddTask"
+        style="@style/FloatingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:onClick="newTask"
+        android:src="@drawable/ic_baseline_add_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabFinishedTasks"
+
+        style="@style/FloatingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:src="@drawable/ic_baseline_library_add_check_24"
+        app:fabCustomSize="45dp"
+        app:layout_constraintBottom_toBottomOf="@id/fabAddTask"
+        app:layout_constraintEnd_toStartOf="@id/fabAddTask"
+        app:layout_constraintTop_toTopOf="@id/fabAddTask" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabProfile"
+        style="@style/FloatingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:src="@drawable/ic_baseline_face_24"
+        app:fabCustomSize="45dp"
+        app:layout_constraintBottom_toBottomOf="@id/fabAddTask"
+        app:layout_constraintStart_toEndOf="@id/fabAddTask"
+        app:layout_constraintTop_toTopOf="@id/fabAddTask" />
+
+    <TextView
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="No task yet"
+        android:textAlignment="center"
+        android:id="@+id/txtNoTaskYet"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
