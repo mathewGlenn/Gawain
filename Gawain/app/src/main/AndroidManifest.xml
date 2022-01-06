@@ -10,9 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".Settings"
+            android:exported="false" />
+        <activity
+            android:name=".ViewTask"
+            android:exported="false" />
+        <activity
+            android:name=".FinishedTasks"
+            android:exported="false" />
+        <activity
             android:name=".AddTask"
             android:exported="false" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".Splash"
             android:exported="true"
