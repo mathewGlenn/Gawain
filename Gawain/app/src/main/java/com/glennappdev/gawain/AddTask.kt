@@ -2,15 +2,21 @@ package com.glennappdev.gawain
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
+import android.database.Cursor
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isEmpty
 import com.glennappdev.gawain.databinding.ActivityAddTaskBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.tomergoldst.timekeeper.core.TimeKeeper
+import com.tomergoldst.timekeeper.model.Alarm
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,12 +35,16 @@ class AddTask : AppCompatActivity() {
     lateinit var binding: ActivityAddTaskBinding
     lateinit var firestore: FirebaseFirestore
 
-
+    lateinit var databaseHelper: DatabaseHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddTaskBinding.inflate(layoutInflater)
         val view: View = binding.root
         setContentView(view)
+
+        //Timekeeper
+        TimeKeeper.initialize(this)
+
         val clearDueDate = binding.clearDueDate
         val clearDueTime = binding.clearDueTime
         val editDueDate = binding.editDueDate
@@ -45,6 +55,17 @@ class AddTask : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
         val user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
+
+
+        databaseHelper = DatabaseHelper(this)
+
+        val subjects = getSubjectsToArray()
+
+        // add subjects to spinner
+        val arrayAdapter = ArrayAdapter<String>(this,
+        android.R.layout.simple_spinner_dropdown_item, subjects)
+        binding.chooseSubj.adapter = arrayAdapter
+
 
         editDueDate.setOnClickListener {
 
@@ -126,6 +147,9 @@ class AddTask : AppCompatActivity() {
             if (binding.editTaskTitle.text.isEmpty()) {
                 Toast.makeText(this, "Please name this task", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
+            } else if (binding.chooseSubj.isEmpty()){
+                Toast.makeText(this, "You have to choose a subject", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
             val taskTitle = binding.editTaskTitle.text.toString()
             val taskNote = binding.editNote.text.toString()
@@ -135,8 +159,32 @@ class AddTask : AppCompatActivity() {
             documentReference.set(task).addOnFailureListener { e ->
                 Toast.makeText(this, "Error: $e", Toast.LENGTH_LONG).show()
             }
+
+            // Task Alarm
+            //val dueDateMillis = taskDueDate!!.time
+            //val timeNow = System.currentTimeMillis()
+            //val timeDifMilli: Long = mDateMillis-timeNow
+            //val alarm = Alarm(taskTitle, dueDateMillis)
+            //TimeKeeper.setAlarm(alarm)
+
             finish()
 
+        }
+
+        if (binding.chooseSubj.count == 0){
+            binding.chooseSubj.visibility =  View.INVISIBLE
+            binding.noSubjYet.visibility = View.VISIBLE
+        }else{
+            binding.chooseSubj.visibility =  View.VISIBLE
+            binding.noSubjYet.visibility = View.INVISIBLE
+        }
+
+        binding.btnAddMoreSubj.setOnClickListener{
+            startActivity(Intent(this, ManageSubjects::class.java))
+        }
+
+        binding.btnBack.setOnClickListener{
+            finish()
         }
     }
 
@@ -147,6 +195,36 @@ class AddTask : AppCompatActivity() {
             return date
         } catch (e: ParseException) {
             return null
+        }
+    }
+
+    fun getSubjectsToArray(): ArrayList<String>{
+        val cursor: Cursor = databaseHelper.info
+        val arrSubjects: ArrayList<String> = ArrayList()
+
+        if (cursor.count > 0){
+            while (cursor.moveToNext()){
+                arrSubjects.add(cursor.getString(1))
+            }
+        }
+        return arrSubjects
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val subjects = getSubjectsToArray()
+
+        // add subjects to spinner
+        val arrayAdapter = ArrayAdapter<String>(this,
+            android.R.layout.simple_spinner_dropdown_item, subjects)
+        binding.chooseSubj.adapter = arrayAdapter
+
+        if (binding.chooseSubj.count == 0){
+            binding.chooseSubj.visibility =  View.INVISIBLE
+            binding.noSubjYet.visibility = View.VISIBLE
+        }else{
+            binding.chooseSubj.visibility =  View.VISIBLE
+            binding.noSubjYet.visibility = View.INVISIBLE
         }
     }
 

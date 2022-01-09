@@ -2,9 +2,9 @@
     <string name="app_name">Gawain</string>
 
     <string-array name="subjects">
-        <item>CS 323</item>
-        <item>CS 321</item>
+        <item>Programming</item>
+        <item>Math</item>
         <item>NSTP</item>
-        <item>CS ELEC 2</item>
+        <item>English</item>
     </string-array>
 </resources>

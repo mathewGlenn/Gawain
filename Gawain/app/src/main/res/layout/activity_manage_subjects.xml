@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ManageSubjects">
+
+    <View
+        android:id="@+id/cardBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_bar"
+        android:background="@color/white"
+        android:elevation="10dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_bar"
+        android:elevation="10dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnBack"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/light_gray"
+            app:cardCornerRadius="160dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                app:tint="@color/text_black" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/topBarText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Manage Subjects"
+
+            android:textColor="@color/text_black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/txtTaskTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/montserrat_semi_bold"
+        android:text="Add subject"
+        android:textColor="@color/text_black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardBar" />
+
+    <EditText
+        android:id="@+id/editSubject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:hint="Subject"
+        app:layout_constraintEnd_toStartOf="@id/cardColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtTaskTitle" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardColor"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="15dp"
+
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="#DCEDC8"
+        app:cardCornerRadius="160dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/editSubject"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/editSubject">
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addSubject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="25dp"
+        android:text="Add subject"
+        android:textAllCaps="false"
+        app:cornerRadius="7dp"
+        app:icon="@drawable/ic_baseline_add_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editSubject" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupSubjects"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:paddingHorizontal="15dp"
+        app:chipMinTouchTargetSize="0dp"
+        app:chipSpacingVertical="5dp"
+        app:layout_constraintTop_toBottomOf="@id/addSubject"
+        app:singleLine="false"
+        app:singleSelection="false">
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.button.MaterialButton
+
+        android:id="@+id/buttonCreateTask"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Save changes"
+        android:textAllCaps="false"
+        android:textSize="17sp"
+        app:cornerRadius="15dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/buttonCreateTask"
+        android:layout_marginBottom="100dp"
+        android:id="@+id/txtData"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
