@@ -20,4 +20,8 @@ class Settings : AppCompatActivity() {
     fun manageSubjects(view: android.view.View) {
         startActivity(Intent(this, ManageSubjects::class.java))
     }
+
+    fun about(view: android.view.View) {
+        //startActivity(Intent(this, About::class.java))
+    }
 }

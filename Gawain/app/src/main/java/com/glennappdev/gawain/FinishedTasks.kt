@@ -1,5 +1,7 @@
 package com.glennappdev.gawain
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color
@@ -15,6 +17,10 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.glennappdev.gawain.databinding.ActivityFinishedTasksBinding
@@ -23,11 +29,13 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import petrov.kristiyan.colorpicker.ColorViewAdapter
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
 class FinishedTasks : AppCompatActivity() {
@@ -152,7 +160,7 @@ class FinishedTasks : AppCompatActivity() {
 
                     val subjColor = getSubjectColor(task.subject)
 
-                    if(subjColor != "no_color"){
+                    if (subjColor != "no_color") {
                         viewHolder.subjectColor.setCardBackgroundColor(Color.parseColor(subjColor))
                     }
 
@@ -162,7 +170,7 @@ class FinishedTasks : AppCompatActivity() {
                             .document(user.uid)
                             .collection("userTasks").document(taskID)
 
-                    // finish a task
+                    // restore finished task
                     viewHolder.finishTask.setOnClickListener {
                         val taskDone: MutableMap<String, Any> = HashMap()
                         taskDone["done"] = false
@@ -175,6 +183,17 @@ class FinishedTasks : AppCompatActivity() {
 
                         Toast.makeText(applicationContext, "Task restored", Toast.LENGTH_SHORT)
                             .show()
+
+                        // Task reminder set
+                        val dueDateMillis = task.dueDate.time
+                        val timeNow = System.currentTimeMillis()
+                        val alertAdvanceMilli = 43200000
+                        val timeDifMilli: Long = dueDateMillis - timeNow - alertAdvanceMilli
+                        val tag = "tag:" + task.title
+                        val notificationMessage = task.title.toString()
+                        val title = "Your task is nearly due"
+                        scheduleNotification(this@FinishedTasks, timeDifMilli, tag, title, notificationMessage)
+
                     }
 
                     viewHolder.view.setOnClickListener { v: View ->
@@ -190,27 +209,45 @@ class FinishedTasks : AppCompatActivity() {
 
                     // get id of task
                     val docID: String = entryAdapter.snapshots.getSnapshot(i).id
+
+                    //delete task
                     viewHolder.deleteTask.setOnClickListener {
                         val reference = firestore.collection("allTasks")
                             .document(user.uid)
                             .collection("userTasks")
                             .document(docID)
                         reference.delete()
+
+                        //cancelNotification(this@FinishedTasks, "tag:"+task.title)
                     }
 
                     // delete all finished tasks. p.s. I thought of this code :P
                     binding.btnDeleteAllFinishedTasks.setOnClickListener {
-                        for (ids in 0 until finishedTaskList.size) {
-                            val currentID = entryAdapter.snapshots.getSnapshot(ids).id
-                            val reference = firestore.collection("allTasks")
-                                .document(user.uid)
-                                .collection("userTasks")
-                                .document(currentID)
-                            reference.delete()
-                            notifyItemRemoved(ids)
-                        }
-                    }
+                        val alertDialogBuilder = AlertDialog.Builder(this@FinishedTasks)
+                        alertDialogBuilder.setMessage("Delete all finished tasks?")
+                            .setCancelable(true)
+                            .setPositiveButton("Delete all") { _, _ ->
+                                for (ids in 0 until finishedTaskList.size) {
+                                    val currentID = entryAdapter.snapshots.getSnapshot(ids).id
+                                    val reference = firestore.collection("allTasks")
+                                        .document(user.uid)
+                                        .collection("userTasks")
+                                        .document(currentID)
+                                    reference.delete()
+                                    notifyItemRemoved(ids)
+                                    Toast.makeText(applicationContext,
+                                        "all finished tasks deleted",
+                                        Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                            .setNegativeButton("Cancel"){dialog,_ ->
+                                dialog.cancel()
+                            }
 
+                        val alertDialog = alertDialogBuilder.create()
+                        alertDialog.show()
+                    }
                 }
 
                 override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -285,4 +322,39 @@ class FinishedTasks : AppCompatActivity() {
     }
 
 
+    val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+    fun getDateFromString(date: String): Date? {
+        try {
+            val date: Date = format.parse(date)
+            return date
+        } catch (e: ParseException) {
+            return null
+        }
+    }
+
+    private fun scheduleNotification(
+        context: Context,
+        timeDelay: Long,
+        tag: String,
+        title: String,
+        body: String,
+    ) {
+
+        val data = Data.Builder().putString("body", body).putString("title", title)
+
+
+        val work = OneTimeWorkRequestBuilder<NotificationSchedule>()
+            .setInitialDelay(timeDelay, TimeUnit.MILLISECONDS)
+            .setConstraints(Constraints.Builder()
+                .setTriggerContentMaxDelay(1000, TimeUnit.MILLISECONDS).build()) // API Level 24
+            .setInputData(data.build())
+            .addTag(tag)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(work)
+    }
+
+//    fun cancelNotification(context: Context, tag: String) {
+//        WorkManager.getInstance(context).cancelAllWorkByTag(tag)
+//    }
 }

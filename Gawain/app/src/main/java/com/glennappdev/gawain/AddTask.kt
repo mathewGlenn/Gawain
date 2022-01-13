@@ -2,6 +2,7 @@ package com.glennappdev.gawain
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
@@ -10,16 +11,19 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isEmpty
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.glennappdev.gawain.databinding.ActivityAddTaskBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.tomergoldst.timekeeper.core.TimeKeeper
-import com.tomergoldst.timekeeper.model.Alarm
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class AddTask : AppCompatActivity() {
@@ -43,7 +47,7 @@ class AddTask : AppCompatActivity() {
         setContentView(view)
 
         //Timekeeper
-        TimeKeeper.initialize(this)
+//        TimeKeeper.initialize(this)
 
         val clearDueDate = binding.clearDueDate
         val clearDueTime = binding.clearDueTime
@@ -63,7 +67,7 @@ class AddTask : AppCompatActivity() {
 
         // add subjects to spinner
         val arrayAdapter = ArrayAdapter<String>(this,
-        android.R.layout.simple_spinner_dropdown_item, subjects)
+            android.R.layout.simple_spinner_dropdown_item, subjects)
         binding.chooseSubj.adapter = arrayAdapter
 
 
@@ -147,7 +151,7 @@ class AddTask : AppCompatActivity() {
             if (binding.editTaskTitle.text.isEmpty()) {
                 Toast.makeText(this, "Please name this task", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (binding.chooseSubj.isEmpty()){
+            } else if (binding.chooseSubj.isEmpty()) {
                 Toast.makeText(this, "You have to choose a subject", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -160,30 +164,33 @@ class AddTask : AppCompatActivity() {
                 Toast.makeText(this, "Error: $e", Toast.LENGTH_LONG).show()
             }
 
-            // Task Alarm
-            //val dueDateMillis = taskDueDate!!.time
-            //val timeNow = System.currentTimeMillis()
-            //val timeDifMilli: Long = mDateMillis-timeNow
-            //val alarm = Alarm(taskTitle, dueDateMillis)
-            //TimeKeeper.setAlarm(alarm)
+            // Task reminder set
+
+            val dueDateMillis = taskDueDate!!.time
+            val timeNow = System.currentTimeMillis()
+            val advanceMilli = 43200000
+            val timeDifMilli: Long = dueDateMillis - timeNow - advanceMilli
+            val tag = "tag:" + binding.editTaskTitle.text.toString()
+            val notificationMessage = "${binding.chooseSubj.selectedItem} - ${binding.editTaskTitle.text}"
+            val title = "Your task is nearly due"
+            scheduleNotification(this, timeDifMilli, tag, title, notificationMessage)
 
             finish()
-
         }
 
-        if (binding.chooseSubj.count == 0){
-            binding.chooseSubj.visibility =  View.INVISIBLE
+        if (binding.chooseSubj.count == 0) {
+            binding.chooseSubj.visibility = View.INVISIBLE
             binding.noSubjYet.visibility = View.VISIBLE
-        }else{
-            binding.chooseSubj.visibility =  View.VISIBLE
+        } else {
+            binding.chooseSubj.visibility = View.VISIBLE
             binding.noSubjYet.visibility = View.INVISIBLE
         }
 
-        binding.btnAddMoreSubj.setOnClickListener{
+        binding.btnAddMoreSubj.setOnClickListener {
             startActivity(Intent(this, ManageSubjects::class.java))
         }
 
-        binding.btnBack.setOnClickListener{
+        binding.btnBack.setOnClickListener {
             finish()
         }
     }
@@ -198,12 +205,12 @@ class AddTask : AppCompatActivity() {
         }
     }
 
-    fun getSubjectsToArray(): ArrayList<String>{
+    fun getSubjectsToArray(): ArrayList<String> {
         val cursor: Cursor = databaseHelper.info
         val arrSubjects: ArrayList<String> = ArrayList()
 
-        if (cursor.count > 0){
-            while (cursor.moveToNext()){
+        if (cursor.count > 0) {
+            while (cursor.moveToNext()) {
                 arrSubjects.add(cursor.getString(1))
             }
         }
@@ -219,14 +226,38 @@ class AddTask : AppCompatActivity() {
             android.R.layout.simple_spinner_dropdown_item, subjects)
         binding.chooseSubj.adapter = arrayAdapter
 
-        if (binding.chooseSubj.count == 0){
-            binding.chooseSubj.visibility =  View.INVISIBLE
+        if (binding.chooseSubj.count == 0) {
+            binding.chooseSubj.visibility = View.INVISIBLE
             binding.noSubjYet.visibility = View.VISIBLE
-        }else{
-            binding.chooseSubj.visibility =  View.VISIBLE
+        } else {
+            binding.chooseSubj.visibility = View.VISIBLE
             binding.noSubjYet.visibility = View.INVISIBLE
         }
     }
 
+    private fun scheduleNotification(
+        context: Context,
+        timeDelay: Long,
+        tag: String,
+        title: String,
+        body: String,
+    ) {
 
+        val data = Data.Builder().putString("body", body).putString("title", title)
+
+
+        val work = OneTimeWorkRequestBuilder<NotificationSchedule>()
+            .setInitialDelay(timeDelay, TimeUnit.MILLISECONDS)
+            .setConstraints(Constraints.Builder()
+                .setTriggerContentMaxDelay(1000, TimeUnit.MILLISECONDS).build()) // API Level 24
+            .setInputData(data.build())
+            .addTag(tag)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(work)
+    }
+
+    fun cancelNotification(context: Context, tag: String) {
+        WorkManager.getInstance(context).cancelAllWorkByTag(tag)
+    }
 }

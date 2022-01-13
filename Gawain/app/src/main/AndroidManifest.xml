@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.glennappdev.gawain">
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -9,11 +11,9 @@
         android:roundIcon="@drawable/ic_gawain_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".About"
-            android:exported="false" />
-        <activity
-            android:name=".Experiment"
             android:exported="false" />
         <activity
             android:name=".ManageSubjects"
@@ -42,14 +42,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <receiver
-            android:name=".AlarmReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.tomergoldst.timekeeper.intent_action.RECEIVE_ALARMS" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

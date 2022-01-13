@@ -140,6 +140,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:onClick="about"
         app:cardCornerRadius="15dp"
         android:id="@+id/cardAbout"
         android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package com.glennappdev.gawain
 
 
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color
@@ -8,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.glennappdev.gawain.databinding.ActivityMainBinding
@@ -24,9 +25,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import java.sql.Time
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -94,10 +93,9 @@ class MainActivity : AppCompatActivity() {
                     viewHolder.finishTask.isChecked = false
 
 
-
                     val subjColor = getSubjectColor(task.subject)
 
-                    if(subjColor != "no_color"){
+                    if (subjColor != "no_color") {
                         viewHolder.subjectColor.setCardBackgroundColor(Color.parseColor(subjColor))
                     }
 
@@ -123,17 +121,17 @@ class MainActivity : AppCompatActivity() {
                         val timeNow = System.currentTimeMillis()
                         val timeDifMilli: Long = dueDateMillis - timeNow
 
-                        if (timeDifMilli in 0..43200000){
+                        if (timeDifMilli in 0..43200000) {
                             viewHolder.taskStatus.visibility = View.VISIBLE
                             viewHolder.taskStatus.setTextColor(Color.parseColor("#FF388E3C"))
                             viewHolder.taskStatus.text = "Due today"
 
-                        }else if (timeDifMilli < 0){
+                        } else if (timeDifMilli < 0) {
                             viewHolder.taskStatus.visibility = View.VISIBLE
                             viewHolder.taskStatus.setTextColor(Color.parseColor("#FFF44336"))
                             viewHolder.taskStatus.text = "Past due"
                             viewHolder.deleteTask.visibility = View.VISIBLE
-                        } else{
+                        } else {
                             viewHolder.taskStatus.visibility = View.GONE
                             viewHolder.deleteTask.visibility = View.INVISIBLE
                         }
@@ -146,9 +144,9 @@ class MainActivity : AppCompatActivity() {
                                 .collection("userTasks")
                                 .document(docID)
                             reference.delete()
-                            Toast.makeText(applicationContext, "Task deleted", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(applicationContext, "Task deleted", Toast.LENGTH_SHORT)
+                                .show()
                         }
-
 
 
                         var hour = offSetDateTime.hour
@@ -214,6 +212,8 @@ class MainActivity : AppCompatActivity() {
                                     "Something went wrong",
                                     Toast.LENGTH_SHORT).show()
                             }
+
+                        cancelNotification(this@MainActivity, "tag:$taskTitle")
 
                         Toast.makeText(applicationContext, "Task finished", Toast.LENGTH_SHORT)
                             .show()
@@ -312,4 +312,7 @@ class MainActivity : AppCompatActivity() {
         return subjColor
     }
 
+    private fun cancelNotification(context: Context, tag: String) {
+        WorkManager.getInstance(context).cancelAllWorkByTag(tag)
+    }
 }

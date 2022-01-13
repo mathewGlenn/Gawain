@@ -1,16 +1,20 @@
 package com.glennappdev.gawain
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.database.Cursor
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.SimpleCursorAdapter
-import com.glennappdev.gawain.databinding.ActivityViewTaskBinding
-import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.glennappdev.gawain.databinding.ActivityViewTaskBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
@@ -20,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.HashMap
+import java.util.concurrent.TimeUnit
 
 
 class ViewTask : AppCompatActivity() {
@@ -38,6 +42,9 @@ class ViewTask : AppCompatActivity() {
 
     lateinit var firestore: FirebaseFirestore
     lateinit var binding: ActivityViewTaskBinding
+
+    lateinit var dueDate: String
+    lateinit var timeString: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewTaskBinding.inflate(layoutInflater)
@@ -73,6 +80,7 @@ class ViewTask : AppCompatActivity() {
         var isFinished: Boolean
 
 
+
         firestore = FirebaseFirestore.getInstance()
         val user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
 
@@ -87,7 +95,7 @@ class ViewTask : AppCompatActivity() {
                 .document(user.uid)
                 .collection("userTasks").document(taskID)
 
-        if (taskDueDate != "no_date" && !taskDueDate.isNullOrEmpty()){
+        if (taskDueDate != "no_date" && !taskDueDate.isNullOrEmpty()) {
             //time
             val dateTimeFormatter = DateTimeFormatter.ofPattern("E MMM d H:m:s O u")
             val offSetDateTime = OffsetDateTime.parse(taskDueDate, dateTimeFormatter)
@@ -99,19 +107,20 @@ class ViewTask : AppCompatActivity() {
             }
 
 
-
             val dateString =
                 offSetDateTime.dayOfMonth.toString() + "/" + monthValue + "/" + offSetDateTime.year.toString()
             val sdf1 = SimpleDateFormat("dd/MM/yyyy")
             val sdf2 = SimpleDateFormat("E, MMM dd, yyyy")
             val dDate = sdf1.parse(dateString)
-            editDueDate.setText(sdf2.format(dDate).toString())
+            dueDate = sdf2.format(dDate).toString()
+            editDueDate.setText(dueDate)
 
             var hour = offSetDateTime.hour
             val minute = offSetDateTime.minute
             val noTime = (hour == 0 && minute == 0)
 
-            origDate = offSetDateTime.dayOfMonth.toString()+ "-" + offSetDateTime.monthValue +"-" + offSetDateTime.year
+            origDate =
+                offSetDateTime.dayOfMonth.toString() + "-" + offSetDateTime.monthValue + "-" + offSetDateTime.year
             origTime = "$hour:$minute"
             // val noTime = (hour == 0 && minute == 0)
             val format: String
@@ -132,48 +141,14 @@ class ViewTask : AppCompatActivity() {
                 }
             }
 
-            val timeString = "$hour:$minute $format"
-            if (!noTime){
+            timeString = "$hour:$minute $format"
+            if (!noTime) {
                 editDueTime.setText(timeString)
             }
             clearDueDate.visibility = View.VISIBLE
             clearDueTime.visibility = View.VISIBLE
 
         }
-
-
-//        binding.checkTaskFinished.setOnClickListener{
-//            if (!binding.checkTaskFinished.isChecked){
-//                val taskDone: MutableMap<String, Any> = HashMap()
-//                taskDone["done"] = true
-//                documentReference.update(taskDone)
-//                    .addOnFailureListener {
-//                        Toast.makeText(applicationContext,
-//                            "Something went wrong",
-//                            Toast.LENGTH_SHORT).show()
-//                    }
-//
-//                Toast.makeText(applicationContext, "Task finished", Toast.LENGTH_SHORT)
-//                    .show()
-//                finish()
-//            }
-//
-//            else{
-//                val taskDone: MutableMap<String, Any> = HashMap()
-//                taskDone["done"] = false
-//                documentReference.update(taskDone)
-//                    .addOnFailureListener {
-//                        Toast.makeText(applicationContext,
-//                            "Something went wrong",
-//                            Toast.LENGTH_SHORT).show()
-//                    }
-//
-//                Toast.makeText(applicationContext, "Task restored", Toast.LENGTH_SHORT)
-//                    .show()
-//                finish()
-//            }
-//        }
-
 
         editDueDate.setOnClickListener {
 
@@ -244,8 +219,9 @@ class ViewTask : AppCompatActivity() {
             clearDueTime.visibility = View.GONE
         }
 
-        binding.btnSaveChanges.setOnClickListener{
-            if (binding.editTaskTitle.text.isNullOrEmpty()){
+
+        binding.btnSaveChanges.setOnClickListener {
+            if (binding.editTaskTitle.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Please name this task", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -265,35 +241,108 @@ class ViewTask : AppCompatActivity() {
 
             Toast.makeText(applicationContext, "Changes are saved", Toast.LENGTH_SHORT)
                 .show()
+
+            // cancel and create new notification if duedate or task title is changed
+            val chooseSubj = binding.chooseSubj
+
+            if (dueDate != editDueDate.text.toString()
+                || timeString != editDueTime.toString()
+                || taskTitle != binding.editTaskTitle.text.toString()
+                || taskSubject != chooseSubj.selectedItem.toString()) {
+
+                    cancelNotification(this, "tag:$taskTitle")
+
+                    val dueDateMillis = due!!.time
+                    val timeNow = System.currentTimeMillis()
+                    val advanceMilli = 43200000
+                    val timeDifMilli: Long = dueDateMillis - timeNow - advanceMilli
+                    val tag = "tag:" + binding.editTaskTitle.text.toString()
+                    val notificationMessage = "${chooseSubj.selectedItem} - ${binding.editTaskTitle.text}"
+                    val title = "Your task is nearly due"
+                    scheduleNotification(this, timeDifMilli, tag, title, notificationMessage)
+            }
+
             finish()
 
         }
 
-        binding.btnBack.setOnClickListener{
+        binding.btnBack.setOnClickListener {
             finish()
+        }
+
+        //delete task
+
+        binding.btnDelete.setOnClickListener {
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            alertDialogBuilder.setMessage("Delete this task?")
+                .setCancelable(true)
+                .setPositiveButton("Delete") { _, _ ->
+                    val reference = firestore.collection("allTasks")
+                        .document(user.uid)
+                        .collection("userTasks")
+                        .document(taskID)
+                    reference.delete()
+                    Toast.makeText(applicationContext, "Task deleted", Toast.LENGTH_SHORT)
+                        .show()
+
+                    cancelNotification(this, "tag:${binding.editTaskTitle.text}")
+
+                    finish()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.cancel()
+                }
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
         }
 
     }
 
     val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
-    fun getDateFromString(date: String): Date? {
-        try {
+    private fun getDateFromString(date: String): Date? {
+        return try {
             val date: Date = format.parse(date)
-            return date
+            date
         } catch (e: ParseException) {
-            return null
+            null
         }
     }
 
-    fun getSubjectsToArray(): ArrayList<String>{
+    private fun getSubjectsToArray(): ArrayList<String> {
         val cursor: Cursor = databaseHelper.info
         val arrSubjects: ArrayList<String> = ArrayList()
 
-        if (cursor.count > 0){
-            while (cursor.moveToNext()){
+        if (cursor.count > 0) {
+            while (cursor.moveToNext()) {
                 arrSubjects.add(cursor.getString(1))
             }
         }
         return arrSubjects
+    }
+
+    private fun scheduleNotification(
+        context: Context,
+        timeDelay: Long,
+        tag: String,
+        title: String,
+        body: String,
+    ) {
+
+        val data = Data.Builder().putString("body", body).putString("title", title)
+
+
+        val work = OneTimeWorkRequestBuilder<NotificationSchedule>()
+            .setInitialDelay(timeDelay, TimeUnit.MILLISECONDS)
+            .setConstraints(Constraints.Builder()
+                .setTriggerContentMaxDelay(1000, TimeUnit.MILLISECONDS).build()) // API Level 24
+            .setInputData(data.build())
+            .addTag(tag)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(work)
+    }
+
+    private fun cancelNotification(context: Context, tag: String) {
+        WorkManager.getInstance(context).cancelAllWorkByTag(tag)
     }
 }

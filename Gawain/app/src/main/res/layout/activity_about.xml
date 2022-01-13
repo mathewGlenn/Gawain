@@ -6,4 +6,99 @@
     android:layout_height="match_parent"
     tools:context=".About">
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnBack"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/light_gray"
+        app:cardCornerRadius="160dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="7dp"
+            android:src="@drawable/ic_baseline_close_24"
+            app:tint="@color/text_black" />
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/logo_png"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gawain - Task Manager"
+            android:textSize="20sp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/montserrat_medium"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Simple task manager for students"
+            android:textSize="15sp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Project in "
+            android:textSize="15sp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="25dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Isabela State University - San Mariano"
+            android:textSize="15sp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Version 1.0.0"
+            android:textSize="15sp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="35dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(c) 2022"
+            android:textSize="15sp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -75,9 +75,10 @@ dependencies {
 
 //    //scheduling an alarm
 //    // TimeKeeper
-    implementation 'com.tomergoldst.android:timekeeper:1.0.2'
-    // Firebase Job Dispatcher
-    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+//    implementation 'com.tomergoldst.android:timekeeper:1.0.2'
+//    // Firebase Job Dispatcher
+//    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
 
 }
