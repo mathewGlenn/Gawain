@@ -1,2 +1,2 @@
 # Gawain
-student checklist and task planner android app
+a simple task manager for students
