@@ -165,15 +165,16 @@ class AddTask : AppCompatActivity() {
             }
 
             // Task reminder set
-
-            val dueDateMillis = taskDueDate!!.time
-            val timeNow = System.currentTimeMillis()
-            val advanceMilli = 43200000
-            val timeDifMilli: Long = dueDateMillis - timeNow - advanceMilli
-            val tag = "tag:" + binding.editTaskTitle.text.toString()
-            val notificationMessage = "${binding.chooseSubj.selectedItem} - ${binding.editTaskTitle.text}"
-            val title = "Your task is nearly due"
-            scheduleNotification(this, timeDifMilli, tag, title, notificationMessage)
+            if(!editDueDate.text.isNullOrEmpty()){
+                val dueDateMillis = taskDueDate!!.time
+                val timeNow = System.currentTimeMillis()
+                val advanceMilli = 43200000
+                val timeDifMilli: Long = dueDateMillis - timeNow - advanceMilli
+                val tag = "tag:" + binding.editTaskTitle.text.toString()
+                val notificationMessage = "${binding.chooseSubj.selectedItem} - ${binding.editTaskTitle.text}"
+                val title = "Your task is nearly due"
+                scheduleNotification(this, timeDifMilli, tag, title, notificationMessage)
+            }
 
             finish()
         }

@@ -44,6 +44,8 @@ class FinishedTasks : AppCompatActivity() {
     lateinit var finishedTaskList: RecyclerView
     lateinit var firestore: FirebaseFirestore
     lateinit var entryAdapter: FirestoreRecyclerAdapter<Task, ViewHolder>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFinishedTasksBinding.inflate(layoutInflater)
@@ -354,7 +356,4 @@ class FinishedTasks : AppCompatActivity() {
         WorkManager.getInstance(context).enqueue(work)
     }
 
-//    fun cancelNotification(context: Context, tag: String) {
-//        WorkManager.getInstance(context).cancelAllWorkByTag(tag)
-//    }
 }

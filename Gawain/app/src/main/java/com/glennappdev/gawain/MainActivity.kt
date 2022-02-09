@@ -76,18 +76,6 @@ class MainActivity : AppCompatActivity() {
                         "no_date"
                     }
 
-                    //format the date for display
-                    val fireStoreFormat = DateTimeFormatter.ofPattern("")
-                    val dateTimeFormat =
-                        DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.getDefault())
-//
-//                    try {
-//                        var formattedDateTime = dueDate.for
-//                        viewHolder.taskDue.text = dateTimeFormat.format(formattedDateTime)
-//                    } catch (e: ParseException) {
-//                        e.printStackTrace()
-//                    }
-
                     viewHolder.taskTitle.text = taskTitle
                     viewHolder.taskSubject.text = taskSubject
                     viewHolder.finishTask.isChecked = false
@@ -131,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                             viewHolder.taskStatus.setTextColor(Color.parseColor("#FFF44336"))
                             viewHolder.taskStatus.text = "Past due"
                             viewHolder.deleteTask.visibility = View.VISIBLE
-                        } else {
+                        } else{
                             viewHolder.taskStatus.visibility = View.GONE
                             viewHolder.deleteTask.visibility = View.INVISIBLE
                         }
@@ -266,6 +254,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, AddTask::class.java))
     }
 
+
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var taskTitle: TextView = itemView.findViewById(R.id.taskTitle)
         var taskSubject: TextView = itemView.findViewById(R.id.taskSubject)
@@ -314,5 +304,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun cancelNotification(context: Context, tag: String) {
         WorkManager.getInstance(context).cancelAllWorkByTag(tag)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        entryAdapter.notifyDataSetChanged()
     }
 }

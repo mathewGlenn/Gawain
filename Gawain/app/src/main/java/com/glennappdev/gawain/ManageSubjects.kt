@@ -114,21 +114,7 @@ class ManageSubjects : AppCompatActivity() {
             chip.setBackgroundColor(resources.getColor(R.color.black))
             chip.setCloseIconResource(R.drawable.ic_baseline_close_24)
             chip.setTextAppearance(this, android.R.style.TextAppearance_Small)
-//
-//            val states = arrayOf(intArrayOf(android.R.attr.state_enabled),
-//                intArrayOf(-android.R.attr.state_enabled),
-//                intArrayOf(-android.R.attr.state_checked),
-//                intArrayOf(android.R.attr.state_pressed))
-//
-//            val colors = intArrayOf(
-//                Color.parseColor(getSubjectColor(subject)),
-//                Color.parseColor(getSubjectColor(subject)),
-//                Color.parseColor(getSubjectColor(subject)),
-//                Color.parseColor(getSubjectColor(subject))
-//            )
-//
-//            val myList = ColorStateList(states, colors)
-//            chip.chipBackgroundColor = myList
+
             chip.isCloseIconVisible = true
 
             chip.setOnCloseIconClickListener {

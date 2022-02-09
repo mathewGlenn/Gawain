@@ -43,7 +43,7 @@ class ViewTask : AppCompatActivity() {
     lateinit var firestore: FirebaseFirestore
     lateinit var binding: ActivityViewTaskBinding
 
-    lateinit var dueDate: String
+    var dueDate: String? = null
     lateinit var timeString: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -249,7 +249,7 @@ class ViewTask : AppCompatActivity() {
                 || timeString != editDueTime.toString()
                 || taskTitle != binding.editTaskTitle.text.toString()
                 || taskSubject != chooseSubj.selectedItem.toString()) {
-
+                if(!editDueDate.text.isNullOrEmpty()){
                     cancelNotification(this, "tag:$taskTitle")
 
                     val dueDateMillis = due!!.time
@@ -260,6 +260,7 @@ class ViewTask : AppCompatActivity() {
                     val notificationMessage = "${chooseSubj.selectedItem} - ${binding.editTaskTitle.text}"
                     val title = "Your task is nearly due"
                     scheduleNotification(this, timeDifMilli, tag, title, notificationMessage)
+                }
             }
 
             finish()

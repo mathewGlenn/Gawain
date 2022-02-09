@@ -61,24 +61,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="5dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Project in "
-            android:textSize="15sp"
-            android:textColor="@color/text_black"
-            android:fontFamily="@font/roboto_regular"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="25dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Isabela State University - San Mariano"
-            android:textSize="15sp"
-            android:textColor="@color/text_black"
-            android:fontFamily="@font/roboto_regular"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"/>
 
         <TextView
             android:layout_width="wrap_content"

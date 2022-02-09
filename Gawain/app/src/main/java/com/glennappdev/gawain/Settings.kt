@@ -22,6 +22,6 @@ class Settings : AppCompatActivity() {
     }
 
     fun about(view: android.view.View) {
-        //startActivity(Intent(this, About::class.java))
+        startActivity(Intent(this, About::class.java))
     }
 }
